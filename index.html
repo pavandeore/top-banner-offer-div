@@ -1,0 +1,61 @@
+	let offerDIV = document.getElementById('offer-simulate');
+
+	var myTimer;
+
+	function diffMinutes(date1, date2) {
+		const d1 = date1;
+		const d2 = date2;
+		return Math.round((d2 - d1) / 60000); // Can use Math.floor or Math.ceil depends up to you
+	}
+
+	function clock() {
+
+		let count = localStorage.getItem('count1') || 0;
+		let onLoadTimeString = new Date().getTime();
+		if(count == 0){
+			localStorage.setItem(`onload_time_string1`,onLoadTimeString)
+			count++;
+			localStorage.setItem('count1',count) 
+		}
+
+		myTimer = setInterval(myClock, 1000);
+
+		if(localStorage.getItem('temp_timer9')){
+			var c = +localStorage.getItem('temp_timer9');
+		}else{
+			var c = 300; //Initially set to 1 hour
+		}
+
+		function myClock() {
+			let currentTimeString = new Date().getTime();
+			--c
+			localStorage.setItem('temp_timer9', c);
+			localStorage.setItem('current_time_string1', currentTimeString);
+
+			// if diff is grater than 1 hour then destroy 
+			if(diffMinutes(+localStorage.getItem('onload_time_string1'),+localStorage.getItem('current_time_string1')) > 5 ){
+				c = 0
+			}
+
+			// calucation for display
+			var seconds = c % 60; // Seconds that cannot be written in minutes
+			var secondsInMinutes = (c - seconds) / 60; // Gives the seconds that COULD be given in minutes
+			var minutes = secondsInMinutes % 60; // Minutes that cannot be written in hours
+			var hours = (secondsInMinutes - minutes) / 60;
+			
+			offerDIV.innerHTML = `
+			<p class="ribbon">
+  				<span class="text"><strong class="bold">Special New Year Offer!</strong></span>
+			</p>
+
+			<span class='pay-in-next'>Pay in Next ${hours} : ${minutes} : ${seconds}</span><br/> Get 3 months Access Free!
+			`;
+			if (c <= 0) {
+				offerDIV.innerHTML = "";
+				offerDIV.style.padding = "0px";
+				document.body.style.marginTop = "0px";
+				clearInterval(myTimer);
+			}
+		}
+	}
+	clock();
